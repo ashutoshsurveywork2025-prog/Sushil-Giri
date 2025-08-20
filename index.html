@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jan Seva Kendra</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: url('https://images.unsplash.com/photo-1501785888041-af3ef285b470?ixlib=rb-4.0.3&auto=format&fit=crop&w=1600&q=80') no-repeat center center/cover;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+      width: 350px;
+      text-align: center;
+    }
+    h1 {
+      font-size: 26px;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      color: #ffffff;
+      background: #2980b9;
+      padding: 10px;
+      border-radius: 50px;
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+    input {
+      width: 90%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      width: 95%;
+      padding: 10px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #2980b9;
+      color: white;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #1a5276;
+    }
+    a {
+      color: #2980b9;
+      text-decoration: none;
+      font-size: 14px;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container" id="loginPage">
+    <div class="logo">🏔️ Jan Seva Kendra</div>
+    <h1>Login</h1>
+    <input type="text" id="loginUser" placeholder="Username">
+    <input type="password" id="loginPass" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p><a href="#" onclick="showRegister()">Register</a> | <a href="#">Forgot Password?</a></p>
+  </div>
+
+  <div class="container hidden" id="registerPage">
+    <div class="logo">🏔️ Jan Seva Kendra</div>
+    <h1>Register</h1>
+    <input type="text" id="regUser" placeholder="New Username">
+    <input type="password" id="regPass" placeholder="New Password">
+    <button onclick="register()">Register</button>
+    <p><a href="#" onclick="showLogin()">Back to Login</a></p>
+  </div>
+
+  <div class="container hidden" id="homePage">
+    <div class="logo">🏔️ Jan Seva Kendra</div>
+    <h1>Welcome</h1>
+    <p>Enter amount to pay:</p>
+    <input type="number" id="amount" placeholder="Enter Amount in ₹">
+    <button onclick="payNow()">Pay Now</button>
+    <p><a href="#" onclick="logout()">Logout</a></p>
+  </div>
+
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    // Dummy storage for user login
+    let user = null;
+
+    function showRegister() {
+      document.getElementById("loginPage").classList.add("hidden");
+      document.getElementById("registerPage").classList.remove("hidden");
+    }
+
+    function showLogin() {
+      document.getElementById("registerPage").classList.add("hidden");
+      document.getElementById("loginPage").classList.remove("hidden");
+    }
+
+    function login() {
+      const u = document.getElementById("loginUser").value;
+      const p = document.getElementById("loginPass").value;
+      if (user && user.username === u && user.password === p) {
+        document.getElementById("loginPage").classList.add("hidden");
+        document.getElementById("homePage").classList.remove("hidden");
+      } else {
+        alert("Invalid login. Please register first.");
+      }
+    }
+
+    function register() {
+      const u = document.getElementById("regUser").value;
+      const p = document.getElementById("regPass").value;
+      if (u && p) {
+        user = { username: u, password: p };
+        alert("Registration successful. Please login now.");
+        showLogin();
+      } else {
+        alert("Enter valid username and password.");
+      }
+    }
+
+    function logout() {
+      document.getElementById("homePage").classList.add("hidden");
+      document.getElementById("loginPage").classList.remove("hidden");
+    }
+
+    function payNow() {
+      let amt = document.getElementById("amount").value;
+      if (!amt || amt <= 0) {
+        alert("Enter valid amount");
+        return;
+      }
+      var options = {
+        "key": "rzp_test_xxxxxxx", // Your Razorpay Test Key
+        "amount": amt * 100, // Convert ₹ to paise
+        "currency": "INR",
+        "name": "Jan Seva Kendra",
+        "description": "Service Payment",
+        "theme": { "color": "#2980b9" },
+        "handler": function (response){
+            alert("Payment Successful! Payment ID: " + response.razorpay_payment_id);
+        }
+      };
+      var rzp1 = new Razorpay(options);
+      rzp1.open();
+    }
+  </script>
+</body>
+</html>
